@@ -6,7 +6,7 @@ export const fadeUp: Variants = {
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] },
+    transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] as const },
   },
 };
 
@@ -36,7 +36,7 @@ export const staggerItem: Variants = {
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] },
+    transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] as const },
   },
 };
 
@@ -46,7 +46,7 @@ export const scaleIn: Variants = {
   visible: {
     opacity: 1,
     scale: 1,
-    transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] },
+    transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] as const },
   },
 };
 
@@ -56,12 +56,12 @@ export const slideInRight: Variants = {
   visible: {
     x: 0,
     opacity: 1,
-    transition: { duration: 0.45, ease: [0.22, 1, 0.36, 1] },
+    transition: { duration: 0.45, ease: [0.22, 1, 0.36, 1] as const },
   },
   exit: {
     x: "100%",
     opacity: 0,
-    transition: { duration: 0.35, ease: [0.36, 0, 0.66, 0] },
+    transition: { duration: 0.35, ease: [0.36, 0, 0.66, 0] as const },
   },
 };
 
@@ -71,12 +71,12 @@ export const slideInLeft: Variants = {
   visible: {
     x: 0,
     opacity: 1,
-    transition: { duration: 0.45, ease: [0.22, 1, 0.36, 1] },
+    transition: { duration: 0.45, ease: [0.22, 1, 0.36, 1] as const },
   },
   exit: {
     x: "-100%",
     opacity: 0,
-    transition: { duration: 0.35, ease: [0.36, 0, 0.66, 0] },
+    transition: { duration: 0.35, ease: [0.36, 0, 0.66, 0] as const },
   },
 };
 
@@ -86,7 +86,7 @@ export const textReveal: Variants = {
   visible: {
     y: 0,
     opacity: 1,
-    transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] },
+    transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] as const },
   },
 };
 
@@ -96,7 +96,7 @@ export const pageTransition: Variants = {
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] },
+    transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] as const },
   },
   exit: {
     opacity: 0,
@@ -111,7 +111,7 @@ export const imageReveal: Variants = {
   visible: {
     clipPath: "inset(0% 0 0 0)",
     opacity: 1,
-    transition: { duration: 0.9, ease: [0.22, 1, 0.36, 1] },
+    transition: { duration: 0.9, ease: [0.22, 1, 0.36, 1] as const },
   },
 };
 
