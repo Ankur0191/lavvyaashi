@@ -3,10 +3,8 @@ import { Cormorant_Garamond, Jost, Inter } from "next/font/google";
 import "./globals.css";
 import { APP_DESCRIPTION, APP_NAME, APP_URL } from "@/constants";
 import { ThemeProvider } from "@/components/layout/ThemeProvider";
-import { Navbar } from "@/components/layout/Navbar";
-import { Footer } from "@/components/layout/Footer";
-import { PageWrapper } from "@/components/layout/PageWrapper";
 import { SmoothScroll } from "@/components/layout/SmoothScroll";
+import { AuthProvider } from "@/components/providers/AuthProvider";
 import { Toaster } from "sonner";
 
 /* ────────────────────────────────────────────────────────────────
@@ -131,22 +129,20 @@ export default function RootLayout({
       <body className="antialiased flex flex-col min-h-screen">
         <SmoothScroll>
           <ThemeProvider>
-            <Navbar />
-            <PageWrapper className="flex-1 pt-navbar">
+            <AuthProvider>
               {children}
-            </PageWrapper>
-            <Footer />
-            <Toaster
-              position="bottom-right"
-              toastOptions={{
-                style: {
-                  background: "var(--bg-card)",
-                  color: "var(--text)",
-                  border: "1px solid var(--border)",
-                  fontFamily: "var(--font-sans)",
-                },
-              }}
-            />
+              <Toaster
+                position="bottom-right"
+                toastOptions={{
+                  style: {
+                    background: "var(--bg-card)",
+                    color: "var(--text)",
+                    border: "1px solid var(--border)",
+                    fontFamily: "var(--font-sans)",
+                  },
+                }}
+              />
+            </AuthProvider>
           </ThemeProvider>
         </SmoothScroll>
       </body>

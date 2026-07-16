@@ -49,31 +49,32 @@ export function Hero() {
           alt="Lavvyaashi Luxury Skincare"
           fill
           priority
-          className="object-cover object-center"
-          style={{ opacity: 0.45, mixBlendMode: "multiply" }}
+          className="object-cover object-center animate-slow-scale"
+          style={{ opacity: 0.9, filter: "contrast(1.05) saturate(1.1) brightness(0.95)" }}
           sizes="100vw"
         />
-        {/* Gradient overlay */}
+        {/* Gradient overlay - Vignette for depth and text readability */}
         <div
           style={{
             position: "absolute",
             inset: 0,
-            background: "linear-gradient(to bottom, rgba(237,225,180,0.25) 0%, transparent 40%, rgba(237,225,180,0.9) 100%)",
+            background: "radial-gradient(circle at center, transparent 40%, rgba(240,234,211,0.5) 100%), linear-gradient(to bottom, rgba(240,234,211,0.1) 0%, transparent 40%, rgba(240,234,211,0.95) 100%)",
           }}
         />
       </motion.div>
 
-      {/* ── Floating decorative orb ── */}
+      {/* ── Floating decorative orbs (Light Bloom for depth) ── */}
       <motion.div
         className="animate-float"
         style={{
           position: "absolute",
           top: "15%",
           right: "8%",
-          width: 220,
-          height: 220,
+          width: 300,
+          height: 300,
           borderRadius: "50%",
-          background: "radial-gradient(circle, rgba(182,140,56,0.12) 0%, transparent 70%)",
+          background: "radial-gradient(circle, rgba(197,156,58,0.15) 0%, transparent 70%)",
+          filter: "blur(40px)",
           zIndex: 1,
           pointerEvents: "none",
         }}
@@ -84,12 +85,29 @@ export function Hero() {
           position: "absolute",
           bottom: "20%",
           left: "6%",
-          width: 160,
-          height: 160,
+          width: 250,
+          height: 250,
           borderRadius: "50%",
-          background: "radial-gradient(circle, rgba(182,140,56,0.08) 0%, transparent 70%)",
+          background: "radial-gradient(circle, rgba(197,156,58,0.12) 0%, transparent 70%)",
+          filter: "blur(40px)",
           zIndex: 1,
           animationDelay: "2s",
+          pointerEvents: "none",
+        }}
+      />
+      {/* Center bloom behind text */}
+      <motion.div
+        style={{
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          width: "60vw",
+          height: "40vh",
+          borderRadius: "50%",
+          background: "radial-gradient(circle, rgba(240,234,211,0.6) 0%, transparent 70%)",
+          filter: "blur(50px)",
+          zIndex: 5,
           pointerEvents: "none",
         }}
       />
@@ -162,7 +180,7 @@ export function Hero() {
               <Button asChild variant="luxury" size="lg" style={{ minWidth: "200px" }}>
                 <Link href={ROUTES.PRODUCTS}>Explore Collection</Link>
               </Button>
-              <Button asChild variant="outline" size="lg" style={{ minWidth: "200px" }}>
+              <Button asChild variant="outline" size="lg" style={{ minWidth: "200px", transitionDuration: "400ms" }}>
                 <Link href={ROUTES.ABOUT}>Our Story</Link>
               </Button>
             </motion.div>

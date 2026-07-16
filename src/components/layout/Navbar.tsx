@@ -7,6 +7,7 @@ import { Search, ShoppingBag, User, Menu, X } from "lucide-react";
 import { motion, AnimatePresence, useScroll, useMotionValueEvent, Variants } from "framer-motion";
 import { cn } from "@/utils";
 import { APP_NAME, NAV_ITEMS, ROUTES } from "@/constants";
+import { useCartStore } from "@/stores/useCartStore";
 
 // ----------------------------------------------------------------------
 // 1. MAIN NAVBAR COMPONENT
@@ -18,6 +19,7 @@ export function Navbar() {
   const [isScrolled, setIsScrolled] = React.useState(false);
   const [isHidden, setIsHidden] = React.useState(false);
   const { scrollY } = useScroll();
+  const { toggleCart, getItemCount } = useCartStore();
 
   // Contextual Smart Scroll (Disappears on scroll down, appears on scroll up)
   useMotionValueEvent(scrollY, "change", (latest) => {
@@ -66,9 +68,9 @@ export function Navbar() {
         animate={isHidden ? "hidden" : "visible"}
         transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] as const }}
         className={cn(
-          "fixed top-0 left-0 right-0 z-50 h-navbar transition-colors duration-luxury ease-luxury",
+          "fixed top-0 left-0 right-0 z-50 h-[80px] flex items-center transition-all duration-luxury ease-luxury",
           isScrolled || !isHome
-            ? "bg-brand-bg/90 backdrop-blur-md border-b border-brand-border/20 shadow-sm"
+            ? "glass shadow-sm border-b border-brand-border/40"
             : "bg-transparent text-brand-text"
         )}
       >
@@ -104,15 +106,17 @@ export function Navbar() {
               <User className="w-[20px] h-[20px] stroke-[1.2]" />
             </Link>
 
-            <button aria-label="Shopping Cart" className="hover:text-gold transition-colors relative group p-1">
+            <button onClick={toggleCart} aria-label="Shopping Cart" className="hover:text-gold transition-colors relative group p-1">
               <ShoppingBag className="w-[20px] h-[20px] stroke-[1.2]" />
-              <motion.span
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                className="absolute -top-1 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-gold text-[9px] font-medium text-white group-hover:scale-110 transition-transform duration-normal"
-              >
-                0
-              </motion.span>
+              {getItemCount() > 0 && (
+                <motion.span
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  className="absolute -top-1 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-gold text-[9px] font-medium text-white group-hover:scale-110 transition-transform duration-normal"
+                >
+                  {getItemCount()}
+                </motion.span>
+              )}
             </button>
           </div>
         </div>
