@@ -19,12 +19,6 @@ const categories = [
     image: "/images/category_body.png",
     link: `${ROUTES.PRODUCTS}?category=body`,
   },
-  {
-    title: "Bath & Shower",
-    subtitle: "Unwind & Refresh",
-    image: "/images/category_bath.png",
-    link: `${ROUTES.PRODUCTS}?category=bath`,
-  },
 ];
 
 export function FeaturedCategories() {

@@ -1,13 +1,19 @@
-"use client";
-
 import * as React from "react";
 import { AdminCard, AdminCardContent, AdminCardHeader, AdminCardTitle } from "@/components/admin/ui/AdminCard";
 import { AdminButton } from "@/components/admin/ui/AdminButton";
 import { Search, Filter, MoreHorizontal } from "lucide-react";
-import { motion } from "framer-motion";
+import { MotionDiv } from "@/components/admin/ui/ClientMotion";
 import { AdminBadge } from "@/components/admin/ui/AdminBadge";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { formatPrice } from "@/utils";
 
-export default function AdminCustomersPage() {
+export default async function AdminCustomersPage() {
+  const supabase = createAdminClient();
+  const { data: customers } = await supabase
+    .from("profiles")
+    .select("*, orders(total)")
+    .eq("role", "customer")
+    .order("created_at", { ascending: false });
   return (
     <div className="space-y-6">
       {/* Page Header */}
@@ -21,7 +27,7 @@ export default function AdminCustomersPage() {
       </div>
 
       {/* Toolbar */}
-      <motion.div
+      <MotionDiv
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
@@ -40,10 +46,10 @@ export default function AdminCustomersPage() {
           <Filter className="w-4 h-4 mr-2" />
           Filters
         </AdminButton>
-      </motion.div>
+      </MotionDiv>
 
       {/* Customers List */}
-      <motion.div
+      <MotionDiv
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.1 }}
@@ -65,39 +71,49 @@ export default function AdminCustomersPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[var(--border-light)]">
-                  {[1, 2, 3, 4, 5, 6].map((i) => (
-                    <tr key={i} className="hover:bg-[var(--bg-primary)]/40 transition-colors group cursor-pointer">
+                  {customers?.map((customer, i) => {
+                    const ltv = customer.orders?.reduce((acc: number, order: any) => acc + order.total, 0) || 0;
+                    return (
+                    <tr key={customer.id} className="hover:bg-[var(--bg-primary)]/40 transition-colors group cursor-pointer">
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
                           <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-[var(--border)] to-[var(--bg-primary)] shrink-0 flex items-center justify-center text-xs font-semibold text-[var(--text-muted)]">
-                            {String.fromCharCode(64 + i)}
+                            {customer.name?.charAt(0).toUpperCase()}
                           </div>
                           <div>
-                            <p className="font-medium text-[var(--text)]">Luxury Client {i}</p>
-                            <p className="text-xs text-[var(--text-subtle)]">client{i}@example.com</p>
+                            <p className="font-medium text-[var(--text)]">{customer.name}</p>
+                            <p className="text-xs text-[var(--text-subtle)]">{customer.email}</p>
                           </div>
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <AdminBadge variant={i === 1 ? "gold" : "default"}>
-                          {i === 1 ? "VIP" : "Active"}
+                        <AdminBadge variant={ltv > 1000 ? "gold" : "default"}>
+                          {ltv > 1000 ? "VIP" : "Active"}
                         </AdminBadge>
                       </td>
-                      <td className="px-6 py-4 text-[var(--text-muted)]">{i * 3}</td>
-                      <td className="px-6 py-4 font-medium text-[var(--text)]">${(i * 450).toFixed(2)}</td>
+                      <td className="px-6 py-4 text-[var(--text-muted)]">{customer.orders?.length || 0}</td>
+                      <td className="px-6 py-4 font-medium text-[var(--text)]">{formatPrice(ltv)}</td>
                       <td className="px-6 py-4 text-right">
                         <button className="text-[var(--text-muted)] hover:text-[var(--text)] p-1 rounded hover:bg-[var(--bg-primary)] transition-colors">
                           <MoreHorizontal className="w-4 h-4" />
                         </button>
                       </td>
                     </tr>
-                  ))}
+                    );
+                  })}
+                  {(!customers || customers.length === 0) && (
+                    <tr>
+                      <td colSpan={5} className="px-6 py-8 text-center text-[var(--text-muted)]">
+                        No customers found.
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
           </AdminCardContent>
         </AdminCard>
-      </motion.div>
+      </MotionDiv>
     </div>
   );
 }

@@ -18,7 +18,17 @@ const loginSchema = z.object({
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 
+import { Suspense } from "react";
+
 export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="flex justify-center items-center py-20"><Loader2 className="w-6 h-6 animate-spin text-gold" /></div>}>
+      <LoginForm />
+    </Suspense>
+  );
+}
+
+function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectUrl = searchParams.get("redirect") || "/";
@@ -99,7 +109,7 @@ export default function LoginPage() {
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full bg-text text-bg-primary rounded-md py-2.5 text-sm font-medium hover:bg-text-muted transition-colors flex items-center justify-center disabled:opacity-70 disabled:cursor-not-allowed mt-6"
+          className="w-full bg-gradient-gold text-white shadow-gold hover:shadow-lg rounded-md py-3 text-sm font-medium uppercase tracking-widest transition-all flex items-center justify-center disabled:opacity-70 disabled:cursor-not-allowed mt-6"
         >
           {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Sign In"}
         </button>

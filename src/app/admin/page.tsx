@@ -1,14 +1,14 @@
-"use client";
-
 import * as React from "react";
 import { AdminMetricCard } from "@/components/admin/widgets/AdminMetricCard";
 import { AdminSparkline } from "@/components/admin/charts/AdminSparkline";
 import { RevenueChart } from "@/components/admin/charts/RevenueChart";
 import { TrafficSourcesChart } from "@/components/admin/charts/TrafficSourcesChart";
 import { DollarSign, ShoppingBag, Users, MousePointerClick, Calendar as CalendarIcon } from "lucide-react";
-import { motion } from "framer-motion";
+import { MotionDiv } from "@/components/admin/ui/ClientMotion";
 import { AdminCard, AdminCardHeader, AdminCardTitle, AdminCardContent } from "@/components/admin/ui/AdminCard";
 import { AdminButton } from "@/components/admin/ui/AdminButton";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { formatPrice } from "@/utils";
 
 // Mock data for sparklines
 const revenueData = Array.from({ length: 14 }).map((_, i) => ({ value: 1000 + Math.random() * 500 + i * 50 }));
@@ -16,7 +16,24 @@ const ordersData = Array.from({ length: 14 }).map((_, i) => ({ value: 20 + Math.
 const visitorsData = Array.from({ length: 14 }).map((_, i) => ({ value: 500 + Math.random() * 200 }));
 const conversionData = Array.from({ length: 14 }).map((_, i) => ({ value: 2 + Math.random() * 1.5 }));
 
-export default function AdminDashboardPage() {
+export default async function AdminDashboardPage() {
+  const supabase = createAdminClient();
+  
+  const [
+    { data: orders },
+    { count: customersCount },
+    { data: recentOrders },
+    { data: lowStockProducts }
+  ] = await Promise.all([
+    supabase.from("orders").select("total"),
+    supabase.from("profiles").select("*", { count: "exact", head: true }).eq("role", "customer"),
+    supabase.from("orders").select("*, profiles(name)").order("created_at", { ascending: false }).limit(5),
+    supabase.from("products").select("id, name, stock").lte("stock", 10).order("stock", { ascending: true }).limit(5)
+  ]);
+
+  const totalRevenue = orders?.reduce((acc, order) => acc + order.total, 0) || 0;
+  const ordersCount = orders?.length || 0;
+
   return (
     <div className="flex flex-col gap-[var(--space-4)] pb-[var(--space-6)]">
       {/* Page Header */}
@@ -44,8 +61,8 @@ export default function AdminDashboardPage() {
       {/* Top Row: Metrics */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-[var(--space-3)]">
         <AdminMetricCard
-          title="Today's Revenue"
-          value="$12,450.00"
+          title="Total Revenue"
+          value={formatPrice(totalRevenue)}
           trend={14.5}
           trendLabel="vs last week"
           icon={<DollarSign className="w-[18px] h-[18px]" />}
@@ -53,8 +70,8 @@ export default function AdminDashboardPage() {
           delay={0.1}
         />
         <AdminMetricCard
-          title="Orders & Pending"
-          value="142"
+          title="Orders"
+          value={ordersCount.toString()}
           trend={8.2}
           trendLabel="vs last week"
           icon={<ShoppingBag className="w-[18px] h-[18px]" />}
@@ -62,8 +79,8 @@ export default function AdminDashboardPage() {
           delay={0.15}
         />
         <AdminMetricCard
-          title="Visitors"
-          value="8,234"
+          title="Customers"
+          value={(customersCount || 0).toString()}
           trend={-2.4}
           trendLabel="vs last week"
           icon={<Users className="w-[18px] h-[18px]" />}
@@ -83,7 +100,7 @@ export default function AdminDashboardPage() {
 
       {/* Second Row: Trends */}
       <div className="grid grid-cols-1 lg:grid-cols-[70%_minmax(0,1fr)] gap-[var(--space-3)]">
-        <motion.div
+        <MotionDiv
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.3 }}
@@ -99,9 +116,9 @@ export default function AdminDashboardPage() {
               </div>
             </AdminCardContent>
           </AdminCard>
-        </motion.div>
+        </MotionDiv>
         
-        <motion.div
+        <MotionDiv
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.35 }}
@@ -117,14 +134,14 @@ export default function AdminDashboardPage() {
               </div>
             </AdminCardContent>
           </AdminCard>
-        </motion.div>
+        </MotionDiv>
       </div>
 
       {/* Third Row: Operational Action */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-[var(--space-3)]">
         
         {/* Recent Orders */}
-        <motion.div
+        <MotionDiv
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.4 }}
@@ -136,22 +153,22 @@ export default function AdminDashboardPage() {
             </AdminCardHeader>
             <AdminCardContent className="flex-1 overflow-y-auto max-h-[300px] scrollbar-thin text-[var(--text-muted)] text-[var(--text-body)]">
               <div className="flex flex-col gap-[var(--space-2)]">
-                {[1, 2, 3, 4, 5].map((i) => (
-                  <div key={i} className="flex items-start gap-[var(--space-2)] p-2 hover:bg-[var(--bg-primary)] rounded-lg transition-colors cursor-pointer border border-transparent hover:border-[var(--border-light)]">
+                {recentOrders?.map((order) => (
+                  <div key={order.id} className="flex items-start gap-[var(--space-2)] p-2 hover:bg-[var(--bg-primary)] rounded-lg transition-colors cursor-pointer border border-transparent hover:border-[var(--border-light)]">
                     <div className="w-2 h-2 mt-1.5 rounded-full bg-[var(--gold)] shrink-0" />
                     <div>
-                      <p className="text-[var(--text)] font-medium">Order #100{i} placed</p>
-                      <p className="text-[var(--text-label)] text-[var(--text-subtle)] mt-0.5">2 minutes ago by Customer {i}</p>
+                      <p className="text-[var(--text)] font-medium">Order #{order.id.slice(0,8).toUpperCase()} placed</p>
+                      <p className="text-[var(--text-label)] text-[var(--text-subtle)] mt-0.5">{new Date(order.created_at).toLocaleDateString()} by {order.profiles?.name || 'Guest'}</p>
                     </div>
                   </div>
                 ))}
               </div>
             </AdminCardContent>
           </AdminCard>
-        </motion.div>
+        </MotionDiv>
 
         {/* Inventory Alerts */}
-        <motion.div
+        <MotionDiv
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.45 }}
@@ -163,27 +180,38 @@ export default function AdminDashboardPage() {
             </AdminCardHeader>
             <AdminCardContent className="flex-1 overflow-y-auto max-h-[300px] scrollbar-thin text-[var(--text-muted)] text-[var(--text-body)]">
               <div className="flex flex-col gap-[var(--space-2)]">
-                {[1, 2, 3].map((i) => (
-                  <div key={i} className="flex items-center justify-between p-[var(--space-2)] border border-red-100 bg-red-50/50 rounded-lg">
-                    <div className="flex items-center gap-[var(--space-2)]">
-                      <div className="w-8 h-8 rounded bg-red-100 flex items-center justify-center text-red-600 font-bold text-xs shrink-0">
-                        {i}
+                {lowStockProducts && lowStockProducts.length > 0 ? (
+                  lowStockProducts.map((p) => (
+                    <div key={p.id} className="flex items-center justify-between p-[var(--space-2)] border border-red-100 bg-red-50/50 rounded-lg">
+                      <div className="flex items-center gap-[var(--space-2)]">
+                        <div className={`w-8 h-8 rounded flex items-center justify-center font-bold text-xs shrink-0 ${
+                          p.stock === 0 ? 'bg-red-200 text-red-800' : 'bg-red-100 text-red-600'
+                        }`}>
+                          {p.stock}
+                        </div>
+                        <div>
+                          <p className="text-red-900 font-medium text-[var(--text-body)] line-clamp-1">{p.name}</p>
+                          <p className="text-[var(--text-label)] text-red-600/80">
+                            {p.stock === 0 ? 'Out of stock' : `Only ${p.stock} unit${p.stock === 1 ? '' : 's'} left`}
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="text-red-900 font-medium text-[var(--text-body)]">Luxury Serum V{i}</p>
-                        <p className="text-[var(--text-label)] text-red-600/80">Only 4 units left</p>
-                      </div>
+                      <a href="/admin/products" className="text-[var(--text-label)] font-medium text-red-700 hover:underline shrink-0 ml-2 text-xs">Restock</a>
                     </div>
-                    <button className="text-[var(--text-label)] font-medium text-red-700 hover:underline shrink-0 ml-2">Restock</button>
+                  ))
+                ) : (
+                  <div className="flex flex-col items-center justify-center py-8 text-center">
+                    <p className="text-sm text-green-700 font-medium">✓ All products are well-stocked</p>
+                    <p className="text-xs text-[var(--text-muted)] mt-1">No inventory alerts at this time</p>
                   </div>
-                ))}
+                )}
               </div>
             </AdminCardContent>
           </AdminCard>
-        </motion.div>
+        </MotionDiv>
 
         {/* Recent Reviews */}
-        <motion.div
+        <MotionDiv
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.5 }}
@@ -209,7 +237,7 @@ export default function AdminDashboardPage() {
               </div>
             </AdminCardContent>
           </AdminCard>
-        </motion.div>
+        </MotionDiv>
 
       </div>
     </div>

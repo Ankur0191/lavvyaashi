@@ -10,25 +10,50 @@ import { OrderSummary } from "@/components/checkout/OrderSummary";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
+import * as fpixel from "@/lib/fpixel";
 
 export default function CheckoutPage() {
   const router = useRouter();
   const { items, getSubtotal, clearCart } = useCartStore();
-  const { user, profile } = useAuthStore();
+  const { user, profile, initialized } = useAuthStore();
   
   const [step, setStep] = useState(1); // 1 = Address, 2 = Payment, 3 = Confirm
   const [address, setAddress] = useState<any>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [mounted, setMounted] = useState(false);
 
+  const checkoutInitiatedRef = React.useRef(false);
+
   useEffect(() => {
     setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (mounted && items.length > 0 && !checkoutInitiatedRef.current) {
+      checkoutInitiatedRef.current = true;
+      fpixel.event("InitiateCheckout", {
+        num_items: items.reduce((acc, item) => acc + item.quantity, 0),
+        value: getSubtotal(),
+        currency: "INR",
+        content_ids: items.map((item) => item.productId),
+      });
+    }
+  }, [mounted, items, getSubtotal]);
+
+  useEffect(() => {
+    if (!mounted || !initialized) return;
     if (items.length === 0) {
       router.push("/products");
+    } else if (!user) {
+      router.push("/login?redirect=/checkout");
     }
-  }, [items, router]);
+  }, [items, user, router, mounted, initialized]);
 
-  if (!mounted) return null;
+  if (!mounted || !initialized) return (
+    <div className="min-h-screen flex items-center justify-center bg-[var(--bg-primary)]">
+      <Loader2 className="w-8 h-8 animate-spin text-[var(--gold)]" />
+    </div>
+  );
 
   const handleAddressSubmit = (data: any) => {
     setAddress(data);
@@ -83,6 +108,15 @@ export default function CheckoutPage() {
 
       if (itemsError) throw itemsError;
 
+      // Track Meta Pixel Purchase event
+      fpixel.event("Purchase", {
+        value: total,
+        currency: "INR",
+        content_ids: items.map((item) => item.productId),
+        content_type: "product",
+        num_items: items.reduce((acc, item) => acc + item.quantity, 0),
+      });
+
       // 3. Clear Cart
       await clearCart();
       
@@ -109,7 +143,7 @@ export default function CheckoutPage() {
           </p>
           <button 
             onClick={() => router.push("/account/orders")}
-            className="bg-text text-bg-primary px-8 py-3 rounded text-sm uppercase tracking-widest font-medium hover:bg-text-muted transition-colors"
+            className="bg-gradient-gold text-white shadow-gold hover:shadow-lg px-8 py-3 rounded-md text-sm uppercase tracking-widest font-medium transition-all"
           >
             View Order Details
           </button>
@@ -164,7 +198,7 @@ export default function CheckoutPage() {
                   <div className="border border-border p-4 rounded-lg flex items-start gap-4 opacity-50 cursor-not-allowed">
                     <input type="radio" disabled className="mt-1" />
                     <div>
-                      <label className="font-medium text-text block mb-1">Credit / Debit Card (Razorpay/Stripe)</label>
+                      <label className="font-medium text-text block mb-1">Credit/Debit Card / UPI (Razorpay)</label>
                       <p className="text-sm text-text-muted">Requires API keys in .env.local to activate.</p>
                     </div>
                   </div>
@@ -180,7 +214,7 @@ export default function CheckoutPage() {
                   <button
                     onClick={() => handlePaymentSubmit("cod")}
                     disabled={isProcessing}
-                    className="flex-1 bg-text text-bg-primary py-3 rounded-md text-sm font-medium uppercase tracking-widest hover:bg-text-muted transition-colors flex justify-center items-center gap-2"
+                    className="flex-1 bg-gradient-gold text-white shadow-gold hover:shadow-lg py-3 rounded-md text-sm font-medium uppercase tracking-widest transition-all flex justify-center items-center gap-2"
                   >
                     {isProcessing ? <Loader2 className="w-4 h-4 animate-spin" /> : "Place Order"}
                   </button>

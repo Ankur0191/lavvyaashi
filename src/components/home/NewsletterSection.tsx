@@ -3,6 +3,7 @@
 import * as React from "react";
 import Image from "next/image";
 import { motion, useScroll, useTransform } from "framer-motion";
+import * as fpixel from "@/lib/fpixel";
 
 export function NewsletterSection() {
   const [email, setEmail] = React.useState("");
@@ -17,6 +18,7 @@ export function NewsletterSection() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    fpixel.event("Lead", { content_name: "Newsletter Subscription" });
     alert(`Thank you! We'll be in touch at ${email}`);
     setEmail("");
   };

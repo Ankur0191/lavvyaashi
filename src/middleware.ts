@@ -23,6 +23,24 @@ export async function middleware(request: NextRequest) {
     }
   }
 
+  // Admin Route Protection — exclude /admin-login itself to avoid redirect loop
+  if (pathname.startsWith("/admin") && !pathname.startsWith("/admin-login")) {
+    const adminSession = request.cookies.get("lavvyaashi_admin_session");
+    if (!adminSession || adminSession.value !== "lavvyaashi_admin_secure_token_v1") {
+      const redirectUrl = new URL("/admin-login", request.url);
+      redirectUrl.searchParams.set("redirect", pathname);
+      return NextResponse.redirect(redirectUrl);
+    }
+  }
+
+  // Prevent logged-in admins from accessing admin-login
+  if (pathname.startsWith("/admin-login")) {
+    const adminSession = request.cookies.get("lavvyaashi_admin_session");
+    if (adminSession && adminSession.value === "lavvyaashi_admin_secure_token_v1") {
+      return NextResponse.redirect(new URL("/admin", request.url));
+    }
+  }
+
   return response;
 }
 

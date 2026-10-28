@@ -1,13 +1,21 @@
-"use client";
-
 import * as React from "react";
 import { AdminCard, AdminCardContent, AdminCardHeader, AdminCardTitle } from "@/components/admin/ui/AdminCard";
 import { AdminButton } from "@/components/admin/ui/AdminButton";
 import { Plus, Search, Filter } from "lucide-react";
-import { motion } from "framer-motion";
+import { MotionDiv } from "@/components/admin/ui/ClientMotion";
 import { AdminBadge } from "@/components/admin/ui/AdminBadge";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { formatPrice } from "@/utils";
+import Link from "next/link";
+import { OrderStatusSelect } from "@/components/admin/orders/OrderStatusSelect";
+import { DownloadLabelButton } from "@/components/admin/orders/DownloadLabelButton";
 
-export default function AdminOrdersPage() {
+export default async function AdminOrdersPage() {
+  const supabase = createAdminClient();
+  const { data: orders } = await supabase
+    .from("orders")
+    .select("*, profiles(name, email)")
+    .order("created_at", { ascending: false });
   return (
     <div className="space-y-6">
       {/* Page Header */}
@@ -25,7 +33,7 @@ export default function AdminOrdersPage() {
       </div>
 
       {/* Toolbar */}
-      <motion.div
+      <MotionDiv
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
@@ -44,10 +52,10 @@ export default function AdminOrdersPage() {
           <Filter className="w-4 h-4 mr-2" />
           Filters
         </AdminButton>
-      </motion.div>
+      </MotionDiv>
 
       {/* Data Grid Placeholder */}
-      <motion.div
+      <MotionDiv
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.1 }}
@@ -66,42 +74,56 @@ export default function AdminOrdersPage() {
                     <th className="px-6 py-4 font-medium">Date</th>
                     <th className="px-6 py-4 font-medium">Status</th>
                     <th className="px-6 py-4 font-medium text-right">Amount</th>
+                    <th className="px-6 py-4 font-medium text-center">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[var(--border-light)]">
-                  {[1, 2, 3, 4, 5].map((i) => (
-                    <tr key={i} className="hover:bg-[var(--bg-primary)]/40 transition-colors group cursor-pointer">
-                      <td className="px-6 py-4 font-medium text-[var(--text)]">#LAV-204{i}</td>
+                  {orders?.map((order) => (
+                    <tr key={order.id} className="hover:bg-[var(--bg-primary)]/40 transition-colors group cursor-pointer">
+                      <td className="px-6 py-4 font-medium text-[var(--text)]">#{order.id.slice(0,8).toUpperCase()}</td>
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
                           <div className="w-6 h-6 rounded-full bg-[var(--border)] shrink-0" />
-                          <span className="font-medium text-[var(--text)]">Jane Doe {i}</span>
+                          <span className="font-medium text-[var(--text)]">{order.profiles?.name || "Guest"}</span>
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-[var(--text-muted)]">Today, 10:4{i} AM</td>
+                      <td className="px-6 py-4 text-[var(--text-muted)]">{new Date(order.created_at).toLocaleString()}</td>
                       <td className="px-6 py-4">
-                        <AdminBadge variant={i % 2 === 0 ? "success" : "warning"}>
-                          {i % 2 === 0 ? "Fulfilled" : "Processing"}
-                        </AdminBadge>
+                        <OrderStatusSelect orderId={order.id} currentStatus={order.status} />
                       </td>
-                      <td className="px-6 py-4 text-right font-medium text-[var(--text)]">$345.00</td>
+                      <td className="px-6 py-4 text-right font-medium text-[var(--text)]">{formatPrice(order.total)}</td>
+                      <td className="px-6 py-4 text-center">
+                        <div className="flex justify-center items-center gap-2">
+                          <Link href={`/admin/orders/${order.id}`} className="px-3 py-1 bg-bg-secondary text-text text-xs rounded hover:bg-border transition-colors">
+                            Details
+                          </Link>
+                          <DownloadLabelButton order={order} />
+                        </div>
+                      </td>
                     </tr>
                   ))}
+                  {(!orders || orders.length === 0) && (
+                    <tr>
+                      <td colSpan={6} className="px-6 py-8 text-center text-[var(--text-muted)]">
+                        No orders found.
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
             
             {/* Pagination Placeholder */}
             <div className="px-6 py-4 border-t border-[var(--border-light)] flex items-center justify-between text-xs text-[var(--text-muted)]">
-              <span>Showing 1 to 5 of 124 orders</span>
+              <span>Showing {orders?.length || 0} orders</span>
               <div className="flex gap-2">
                 <AdminButton variant="outline" size="sm" disabled>Previous</AdminButton>
-                <AdminButton variant="outline" size="sm">Next</AdminButton>
+                <AdminButton variant="outline" size="sm" disabled>Next</AdminButton>
               </div>
             </div>
           </AdminCardContent>
         </AdminCard>
-      </motion.div>
+      </MotionDiv>
     </div>
   );
 }

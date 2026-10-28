@@ -1,3 +1,5 @@
+"use client";
+
 import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/utils";
@@ -8,7 +10,7 @@ const adminButtonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-[var(--text)] text-[var(--bg-primary)] hover:bg-[var(--text-muted)] shadow-sm",
+        default: "bg-gradient-gold text-white shadow-gold hover:shadow-lg border-none",
         outline: "border border-[var(--border)] bg-transparent hover:bg-[var(--bg-primary)] hover:text-[var(--text)]",
         secondary: "bg-[var(--bg-primary)] text-[var(--text)] hover:bg-[var(--border-light)]",
         ghost: "hover:bg-[var(--bg-primary)] hover:text-[var(--text)] text-[var(--text-muted)]",

@@ -19,6 +19,19 @@
   --color-text-subtle:  #8c857e;
   --color-border:       #D8CDBA;
   --color-border-light: #F0EADF;
+  --color-accent-pink:  #E8A0BF;
+  --color-accent-pink-light: #F2C6DE;
+  --color-accent-pink-light: #F2C6DE;
+  --color-accent-green: #A8D5BA;
+  --color-accent-green-light: #C7E8D4;
+  
+  /* ── Luxury Hero Redesign Colors ── */
+  --color-hero-bg: #F8F3EC;
+  --color-hero-ivory: #FCF8F2;
+  --color-hero-champagne: #E7D7B3;
+  --color-hero-gold: #D4AF37;
+  --color-hero-dark: #2A2A2A;
+  --color-hero-muted: #6C6C6C;
 
   /* ── Semantic bg colours ── */
   --color-bg-primary:         #f0ead3;
@@ -117,6 +130,10 @@
   --gold:             #c59c3a;
   --dark-gold:        #9e7722;
   --gold-light:       #d8b65c;
+  --accent-pink:      #E8A0BF;
+  --accent-pink-light:#F2C6DE;
+  --accent-green:     #A8D5BA;
+  --accent-green-light:#C7E8D4;
   --font-serif:       "Cormorant Garamond", Georgia, serif;
   --font-sans:        "Jost", "Inter", system-ui, sans-serif;
   --navbar-height:    72px;
@@ -254,6 +271,11 @@ p  { font-family: var(--font-sans); line-height: 1.75; color: var(--text-muted);
 
 /* Navbar push-down */
 .pt-navbar { padding-top: var(--navbar-height); }
+.pt-navbar-mobile { padding-top: calc(var(--navbar-height) - 10px); }
+
+@media (min-width: 768px) {
+  .pt-navbar-mobile { padding-top: var(--navbar-height); }
+}
 
 /* ============================================================
    TEXT COLOUR HELPERS
@@ -271,6 +293,13 @@ p  { font-family: var(--font-sans); line-height: 1.75; color: var(--text-muted);
 }
 .gradient-text-animate {
   animation: shimmer-text 3s linear infinite;
+}
+.gradient-accent {
+  background: linear-gradient(135deg, var(--gold) 0%, var(--accent-pink) 50%, var(--accent-green) 100%);
+  background-size: 200% auto;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 /* ============================================================

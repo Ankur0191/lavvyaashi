@@ -126,7 +126,7 @@ export function AddressForm({ onSubmit, defaultValues }: AddressFormProps) {
       <div className="pt-6">
         <button
           type="submit"
-          className="w-full bg-text text-bg-primary py-3 rounded-md text-sm font-medium uppercase tracking-widest hover:bg-text-muted transition-colors"
+          className="w-full bg-gradient-gold text-white shadow-gold hover:shadow-lg py-3 rounded-md text-sm font-medium uppercase tracking-widest transition-all"
         >
           Continue to Payment
         </button>

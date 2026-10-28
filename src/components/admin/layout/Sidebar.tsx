@@ -8,20 +8,37 @@ import { LogOut, LayoutPanelLeft } from "lucide-react";
 import { cn } from "@/utils";
 import { ADMIN_SIDEBAR_LINKS } from "@/constants/admin";
 import { useSidebarStore } from "@/stores/admin/useSidebarStore";
+import { useRouter } from "next/navigation";
 
 export function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
   const { isExpanded, toggleSidebar } = useSidebarStore();
 
+  const handleLogout = async () => {
+    await fetch("/api/admin-auth", { method: "DELETE" });
+    router.push("/admin-login");
+    router.refresh();
+  };
+
   return (
-    <motion.aside
-      initial={false}
-      animate={{
-        width: isExpanded ? "var(--sidebar-width)" : "var(--sidebar-width-collapsed)",
-      }}
-      transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-      className="fixed left-0 top-0 h-screen z-[100] flex flex-col bg-[var(--bg-card)] border-r border-[var(--border)] overflow-hidden"
-    >
+    <>
+      {/* Mobile Backdrop */}
+      {isExpanded && (
+        <div 
+          className="md:hidden fixed inset-0 bg-black/50 z-[90] backdrop-blur-sm"
+          onClick={toggleSidebar}
+        />
+      )}
+      
+      <aside
+        className={cn(
+          "fixed left-0 top-0 h-screen z-[100] flex flex-col bg-[var(--bg-card)] border-r border-[var(--border)] overflow-hidden transition-all duration-300",
+          isExpanded ? "translate-x-0 w-[var(--sidebar-width)]" : "-translate-x-full w-[var(--sidebar-width)]",
+          "md:translate-x-0",
+          isExpanded ? "md:w-[var(--sidebar-width)]" : "md:w-[var(--sidebar-width-collapsed)]"
+        )}
+      >
       {/* Header */}
       <div className="flex items-center h-[var(--topbar-height)] px-[var(--space-3)] border-b border-[var(--border)] shrink-0 justify-between">
         <motion.div
@@ -56,7 +73,37 @@ export function Sidebar() {
             {group.items.map((item) => {
               const isActive = pathname === item.href;
               const Icon = item.icon;
-              
+              const isSoon = "comingSoon" in item && item.comingSoon;
+
+              if (isSoon) {
+                return (
+                  <div
+                    key={item.label}
+                    title={!isExpanded ? `${item.label} — Coming Soon` : undefined}
+                    className="relative block cursor-not-allowed"
+                  >
+                    <div
+                      className={cn(
+                        "flex items-center rounded-lg text-[var(--text-subtle)] opacity-50",
+                        isExpanded
+                          ? "flex-row gap-3 px-3 py-2"
+                          : "justify-center px-0 py-2.5"
+                      )}
+                    >
+                      <Icon className="w-5 h-5 shrink-0 stroke-[1.5]" />
+                      {isExpanded && (
+                        <>
+                          <span className="whitespace-nowrap text-sm flex-1">{item.label}</span>
+                          <span className="text-[9px] font-semibold uppercase tracking-widest bg-[var(--gold)] text-white px-1.5 py-0.5 rounded-full leading-none">
+                            Soon
+                          </span>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                );
+              }
+
               return (
                 <Link
                   key={item.label}
@@ -98,6 +145,7 @@ export function Sidebar() {
       {/* Footer (Logout) */}
       <div className="p-[var(--space-2)] border-t border-[var(--border)] shrink-0">
         <button
+          onClick={handleLogout}
           className={cn(
             "w-full flex items-center rounded-lg text-[var(--text-body)] text-[var(--text-muted)] hover:bg-[var(--bg-primary)] hover:text-[var(--text)] transition-all duration-200",
             isExpanded ? "flex-row gap-3 px-3 py-2" : "justify-center px-0 py-2.5"
@@ -110,6 +158,7 @@ export function Sidebar() {
           )}
         </button>
       </div>
-    </motion.aside>
+      </aside>
+    </>
   );
 }

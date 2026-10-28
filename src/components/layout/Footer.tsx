@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { APP_NAME, APP_DESCRIPTION, FOOTER_LINKS, ROUTES } from "@/constants";
 
 export function Footer() {
@@ -32,15 +33,16 @@ export function Footer() {
               href={ROUTES.HOME}
               style={{
                 display: "block",
-                fontFamily: "var(--font-serif)",
-                fontSize: "1.75rem",
-                letterSpacing: "0.12em",
-                textTransform: "uppercase",
-                color: "var(--text)",
-                marginBottom: "1rem",
+                marginBottom: "1.5rem",
               }}
             >
-              {APP_NAME}
+              <Image 
+                src="/lavvyaashi-logo.png" 
+                alt={APP_NAME} 
+                width={160} 
+                height={48} 
+                style={{ height: "40px", width: "auto", objectFit: "contain" }}
+              />
             </Link>
             <p
               style={{
@@ -76,12 +78,14 @@ export function Footer() {
                     transition: "border-color 0.2s, color 0.2s",
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.borderColor = "var(--gold)";
-                    e.currentTarget.style.color = "var(--gold)";
+                    e.currentTarget.style.borderColor = "var(--accent-pink)";
+                    e.currentTarget.style.color = "var(--accent-pink)";
+                    e.currentTarget.style.boxShadow = "0 0 10px rgba(232,160,191,0.2)";
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.borderColor = "var(--border)";
                     e.currentTarget.style.color = "var(--text-subtle)";
+                    e.currentTarget.style.boxShadow = "none";
                   }}
                 >
                   {s}
@@ -184,8 +188,9 @@ export function Footer() {
           </div>
         </div>
 
-        {/* Divider */}
-        <div style={{ borderTop: "1px solid var(--border-light)", paddingTop: "1.75rem", display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: "1rem" }}>
+        {/* Divider with subtle gradient */}
+        <div style={{ borderTop: "1px solid var(--border-light)", background: "linear-gradient(90deg, transparent, rgba(232,160,191,0.1), rgba(168,213,186,0.1), transparent)", height: "1px", width: "100%", marginBottom: "1.75rem" }} />
+        <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: "1rem" }}>
           <p style={{ fontFamily: "var(--font-sans)", fontSize: "0.8rem", color: "var(--text-subtle)", margin: 0 }}>
             © {year} {APP_NAME}. All rights reserved.
           </p>

@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { createClient } from "@/lib/supabase/client";
 import { useAuthStore } from "./useAuthStore";
+import * as fpixel from "@/lib/fpixel";
 
 interface CartItem {
   id?: string; // Supabase cart_item ID
@@ -56,6 +57,15 @@ export const useCartStore = create<CartState>()(
           newItems = [...items, { productId: product.id, product, quantity }];
         }
         
+        // Track Meta Pixel AddToCart event
+        fpixel.event("AddToCart", {
+          content_name: product.name,
+          content_ids: [product.id],
+          content_type: "product",
+          value: (product.price || 0) * quantity,
+          currency: "INR",
+        });
+
         // Sync to Supabase if logged in
         const user = useAuthStore.getState().user;
         if (user) {

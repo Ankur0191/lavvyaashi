@@ -6,6 +6,7 @@ import { ThemeProvider } from "@/components/layout/ThemeProvider";
 import { SmoothScroll } from "@/components/layout/SmoothScroll";
 import { AuthProvider } from "@/components/providers/AuthProvider";
 import { Toaster } from "sonner";
+import { MetaPixel } from "@/components/analytics/MetaPixel";
 
 /* ────────────────────────────────────────────────────────────────
    Font definitions — loaded via next/font for zero-CLS
@@ -94,14 +95,6 @@ export const metadata: Metadata = {
     },
   },
   manifest: "/site.webmanifest",
-  icons: {
-    icon: [
-      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
-      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
-    ],
-    apple: "/apple-touch-icon.png",
-    shortcut: "/favicon.ico",
-  },
 };
 
 export const viewport: Viewport = {
@@ -127,6 +120,7 @@ export default function RootLayout({
       className={`${cormorant.variable} ${jost.variable} ${inter.variable}`}
     >
       <body className="antialiased flex flex-col min-h-screen">
+        <MetaPixel />
         <SmoothScroll>
           <ThemeProvider>
             <AuthProvider>

@@ -7,12 +7,16 @@ import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Minus, Plus, ShoppingBag } from "lucide-react";
 import { useCartStore } from "@/stores/useCartStore";
+import { useAuthStore } from "@/stores/useAuthStore";
 import { formatPrice } from "@/utils";
+import { AuthModal } from "@/components/auth/AuthModal";
 
 export function CartDrawer() {
   const router = useRouter();
   const { isOpen, closeCart, items, updateQuantity, removeItem, getSubtotal } = useCartStore();
+  const { user } = useAuthStore();
   const [mounted, setMounted] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -153,16 +157,29 @@ export function CartDrawer() {
                 </p>
                 <button
                   onClick={() => {
-                    closeCart();
-                    router.push("/checkout");
+                    if (user) {
+                      closeCart();
+                      router.push("/checkout");
+                    } else {
+                      setShowAuthModal(true);
+                    }
                   }}
-                  className="w-full bg-text text-bg-primary hover:bg-text-muted transition-colors py-4 text-sm font-medium uppercase tracking-widest rounded flex items-center justify-center gap-2"
+                  className="w-full bg-gradient-gold text-white shadow-gold hover:shadow-lg transition-all py-4 text-sm font-medium uppercase tracking-widest rounded flex items-center justify-center gap-2"
                 >
                   Proceed to Checkout
                 </button>
               </div>
             )}
           </motion.div>
+          <AuthModal 
+            isOpen={showAuthModal} 
+            onClose={() => setShowAuthModal(false)}
+            onSuccess={() => {
+              setShowAuthModal(false);
+              closeCart();
+              router.push("/checkout");
+            }}
+          />
         </>
       )}
     </AnimatePresence>

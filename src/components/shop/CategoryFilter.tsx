@@ -21,10 +21,10 @@ export function CategoryFilter({ categories, selectedCategory, onSelectCategory 
       <button
         onClick={() => onSelectCategory(null)}
         className={cn(
-          "px-4 py-2 text-sm rounded-full transition-colors border",
+          "px-6 py-2.5 text-[11px] uppercase tracking-[0.15em] font-medium transition-all duration-500",
           selectedCategory === null
-            ? "bg-text text-bg-primary border-text"
-            : "bg-transparent text-text-muted border-border hover:border-text hover:text-text"
+            ? "text-gold border-b border-gold"
+            : "text-text-muted hover:text-text border-b border-transparent hover:border-border"
         )}
       >
         All Products
@@ -35,10 +35,10 @@ export function CategoryFilter({ categories, selectedCategory, onSelectCategory 
           key={cat.id}
           onClick={() => onSelectCategory(cat.slug)}
           className={cn(
-            "px-4 py-2 text-sm rounded-full transition-colors border",
+            "px-6 py-2.5 text-[11px] uppercase tracking-[0.15em] font-medium transition-all duration-500",
             selectedCategory === cat.slug
-              ? "bg-text text-bg-primary border-text"
-              : "bg-transparent text-text-muted border-border hover:border-text hover:text-text"
+              ? "text-gold border-b border-gold"
+              : "text-text-muted hover:text-text border-b border-transparent hover:border-border"
           )}
         >
           {cat.name}

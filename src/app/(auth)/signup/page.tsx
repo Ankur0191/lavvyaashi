@@ -10,16 +10,32 @@ import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { useAuthStore } from "@/stores/useAuthStore";
+import * as fpixel from "@/lib/fpixel";
 
 const signupSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   email: z.string().email("Please enter a valid email address"),
+  phone: z.string().min(10, "Please enter a valid phone number"),
   password: z.string().min(6, "Password must be at least 6 characters"),
+  confirmPassword: z.string(),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords do not match",
+  path: ["confirmPassword"],
 });
 
 type SignupFormValues = z.infer<typeof signupSchema>;
 
+import { Suspense } from "react";
+
 export default function SignupPage() {
+  return (
+    <Suspense fallback={<div className="flex justify-center items-center py-20"><Loader2 className="w-6 h-6 animate-spin text-gold" /></div>}>
+      <SignupForm />
+    </Suspense>
+  );
+}
+
+function SignupForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectUrl = searchParams.get("redirect") || "/";
@@ -44,6 +60,7 @@ export default function SignupPage() {
       options: {
         data: {
           name: data.name,
+          phone: data.phone,
         }
       }
     });
@@ -55,6 +72,7 @@ export default function SignupPage() {
     }
 
     await initialize(); // Refresh auth store
+    fpixel.event("CompleteRegistration");
     toast.success("Account created successfully!");
     router.push(redirectUrl);
     router.refresh();
@@ -100,6 +118,21 @@ export default function SignupPage() {
 
         <div>
           <label className="block text-xs font-medium text-text-muted mb-1 uppercase tracking-wider">
+            Phone Number
+          </label>
+          <input
+            {...register("phone")}
+            type="tel"
+            className="w-full bg-bg-primary border border-border rounded-md px-3 py-2 text-sm text-text focus:outline-none focus:ring-1 focus:ring-gold focus:border-gold transition-colors"
+            placeholder="+91 9876543210"
+          />
+          {errors.phone && (
+            <p className="mt-1 text-xs text-red-500">{errors.phone.message}</p>
+          )}
+        </div>
+
+        <div>
+          <label className="block text-xs font-medium text-text-muted mb-1 uppercase tracking-wider">
             Password
           </label>
           <input
@@ -112,12 +145,26 @@ export default function SignupPage() {
           )}
         </div>
 
+        <div>
+          <label className="block text-xs font-medium text-text-muted mb-1 uppercase tracking-wider">
+            Confirm Password
+          </label>
+          <input
+            {...register("confirmPassword")}
+            type="password"
+            className="w-full bg-bg-primary border border-border rounded-md px-3 py-2 text-sm text-text focus:outline-none focus:ring-1 focus:ring-gold focus:border-gold transition-colors"
+          />
+          {errors.confirmPassword && (
+            <p className="mt-1 text-xs text-red-500">{errors.confirmPassword.message}</p>
+          )}
+        </div>
+
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full bg-text text-bg-primary rounded-md py-2.5 text-sm font-medium hover:bg-text-muted transition-colors flex items-center justify-center disabled:opacity-70 disabled:cursor-not-allowed mt-6"
+          className="w-full bg-gradient-gold text-white shadow-gold hover:shadow-lg rounded-md py-3 text-sm font-medium uppercase tracking-widest transition-all flex items-center justify-center disabled:opacity-70 disabled:cursor-not-allowed mt-6"
         >
-          {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Create Account"}
+          {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Sign Up"}
         </button>
       </form>
 

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Search, ShoppingBag, User, Menu, X } from "lucide-react";
 import { motion, AnimatePresence, useScroll, useMotionValueEvent, Variants } from "framer-motion";
+import Image from "next/image";
 import { cn } from "@/utils";
 import { APP_NAME, NAV_ITEMS, ROUTES } from "@/constants";
 import { useCartStore } from "@/stores/useCartStore";
@@ -88,9 +89,16 @@ export function Navbar() {
           {/* Editorial Logo */}
           <Link
             href={ROUTES.HOME}
-            className="text-xl md:text-2xl font-serif tracking-[0.15em] uppercase flex-1 text-center md:flex-none md:text-left text-brand-text hover:opacity-80 transition-opacity"
+            className="flex-1 text-left flex items-center justify-start ml-2 md:ml-0 hover:opacity-80 transition-opacity"
           >
-            {APP_NAME}
+            <Image 
+              src="/lavvyaashi-logo.png" 
+              alt={APP_NAME} 
+              width={140} 
+              height={40} 
+              className="h-10 w-auto object-contain"
+              priority
+            />
           </Link>
 
           {/* Desktop Nav - Central Focus Menu */}
@@ -149,7 +157,7 @@ function DesktopNav({ pathname }: { pathname: string }) {
           <Link
             key={item.label}
             href={item.href}
-            className="relative py-2 px-1 text-fluid-xs font-sans font-light uppercase tracking-[0.25em] transition-colors duration-normal hover:text-gold group"
+            className="relative py-2 px-1 text-[13px] font-sans font-light uppercase tracking-[0.25em] transition-colors duration-normal hover:text-gold group drop-shadow-sm"
           >
             <span className={cn(
               "relative z-10 transition-opacity duration-normal",
@@ -229,7 +237,13 @@ function MobileMenu({ onClose, pathname }: { onClose: () => void; pathname: stri
         aria-modal="true"
       >
         <div className="flex items-center justify-between p-6 border-b border-brand-border/40">
-          <span className="text-lg font-serif tracking-wider uppercase text-brand-text">{APP_NAME}</span>
+          <Image 
+            src="/lavvyaashi-logo.png" 
+            alt={APP_NAME} 
+            width={120} 
+            height={32} 
+            className="h-8 w-auto object-contain"
+          />
           <button
             onClick={onClose}
             className="p-2 -mr-2 text-brand-text hover:text-gold transition-colors focus:outline-none"
@@ -247,7 +261,7 @@ function MobileMenu({ onClose, pathname }: { onClose: () => void; pathname: stri
                 <Link
                   href={item.href}
                   className={cn(
-                    "text-fluid-sm font-light uppercase tracking-[0.15em] transition-colors flex items-center justify-between py-1",
+                    "text-[13px] font-light uppercase tracking-[0.15em] transition-colors flex items-center justify-between py-1 drop-shadow-sm",
                     isActive ? "text-gold" : "text-brand-text hover:text-gold"
                   )}
                 >
@@ -262,7 +276,7 @@ function MobileMenu({ onClose, pathname }: { onClose: () => void; pathname: stri
           <motion.div variants={itemVariants} className="pt-8 border-t border-brand-border/40 mt-auto flex flex-col space-y-4">
             <Link
               href={ROUTES.ACCOUNT}
-              className="flex items-center space-x-3 text-fluid-xs font-light uppercase tracking-wider text-brand-text hover:text-gold transition-colors"
+              className="flex items-center space-x-3 text-[13px] font-light uppercase tracking-wider text-brand-text hover:text-gold transition-colors drop-shadow-sm"
             >
               <User className="w-[16px] h-[16px] stroke-[1.2]" />
               <span>My Account</span>

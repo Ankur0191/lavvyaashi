@@ -1,15 +1,25 @@
 "use client";
 
 import * as React from "react";
-import { Search, Bell, Settings } from "lucide-react";
+import { Search, Bell, Settings, Menu } from "lucide-react";
 import { useCommandStore } from "@/stores/admin/useCommandStore";
+import { useSidebarStore } from "@/stores/admin/useSidebarStore";
 
 export function Topbar() {
   const { toggleCommand } = useCommandStore();
+  const { toggleSidebar } = useSidebarStore();
 
   return (
-    <header className="h-[var(--topbar-height)] bg-[var(--bg-card)]/80 backdrop-blur-md border-b border-[var(--border)] flex items-center justify-between px-[var(--space-3)] sm:px-[var(--space-5)] sticky top-0 z-[50]">
+    <header className="h-[var(--topbar-height)] bg-[var(--bg-card)]/80 backdrop-blur-md border-b border-[var(--border)] flex items-center justify-between px-[var(--space-3)] sm:px-[var(--space-5)] sticky top-0 z-[50] gap-2 sm:gap-4">
       
+      {/* Mobile Toggle */}
+      <button 
+        onClick={toggleSidebar}
+        className="md:hidden p-2 -ml-2 rounded-md hover:bg-[var(--bg-primary)] text-[var(--text)] transition-colors focus:outline-none"
+      >
+        <Menu className="w-5 h-5 stroke-[1.5]" />
+      </button>
+
       {/* Search (Max Width 600px) */}
       <div className="flex-1 max-w-[600px] flex items-center">
         <button

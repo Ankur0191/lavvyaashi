@@ -1,156 +1,56 @@
-"use client";
+import React from "react";
+import { createClient } from "@/lib/supabase/server";
+import { ProductDetailClient } from "@/components/shop/ProductDetailClient";
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 
-import React, { useEffect, useState, use } from "react";
-import Image from "next/image";
-import { createClient } from "@/lib/supabase/client";
-import { formatPrice } from "@/utils";
-import { Loader2, Minus, Plus, ShoppingBag } from "lucide-react";
-import { toast } from "sonner";
-import { notFound } from "next/navigation";
-import { useCartStore } from "@/stores/useCartStore";
+export const revalidate = 60; // Cache for 60 seconds
 
-export default function ProductDetailPage({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = use(params);
-  const [product, setProduct] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [quantity, setQuantity] = useState(1);
-  const { addItem } = useCartStore();
+export default async function ProductDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const supabase = await createClient();
 
-  useEffect(() => {
-    const fetchProduct = async () => {
-      const supabase = createClient();
-      const { data, error } = await supabase
-        .from("products")
-        .select("*, category:categories(*)")
-        .eq("slug", slug)
-        .single();
-        
-      if (error || !data) {
-        notFound();
-      } else {
-        setProduct(data);
-      }
-      setIsLoading(false);
-    };
-    fetchProduct();
-  }, [slug]);
+  const { data: product, error } = await supabase
+    .from("products")
+    .select("*, category:categories(*)")
+    .eq("slug", slug)
+    .single();
 
-  if (isLoading) {
+  if (error || !product) {
     return (
-      <div className="min-h-screen bg-bg-primary pt-navbar flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-gold" />
+      <div className="min-h-screen bg-bg-primary pt-navbar flex flex-col items-center justify-center gap-4 text-center px-4">
+        <p className="text-5xl font-serif text-text">Product Not Found</p>
+        <p className="text-text-muted max-w-md">
+          The product you&apos;re looking for doesn&apos;t exist or may have been removed.
+        </p>
+        <Link
+          href="/products"
+          className="mt-4 inline-flex items-center gap-2 bg-gradient-gold text-white shadow-gold hover:shadow-lg px-6 py-3 rounded-md font-medium transition-all"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Back to Collection
+        </Link>
       </div>
     );
   }
 
-  if (!product) return null;
-
   return (
     <div className="min-h-screen bg-bg-primary pt-navbar">
-      <div className="container py-12 md:py-24">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-24">
-          
-          {/* Left: Image Gallery */}
-          <div className="space-y-4">
-            <div className="relative aspect-[4/5] bg-bg-secondary w-full">
-              <Image
-                src={product.thumbnail || "/products/serum.webp"}
-                alt={product.name}
-                fill
-                className="object-cover"
-                priority
-              />
-            </div>
-          </div>
+      {/* Breadcrumb */}
+      <div className="container pt-6 pb-0">
+        <nav className="flex items-center gap-2 text-sm text-text-muted">
+          <Link href="/" className="hover:text-text transition-colors">Home</Link>
+          <span>/</span>
+          <Link href="/products" className="hover:text-text transition-colors">Collection</Link>
+          <span>/</span>
+          <span className="text-text">{product.name}</span>
+        </nav>
+      </div>
 
-          {/* Right: Product Info */}
-          <div className="flex flex-col">
-            <div className="mb-8">
-              <p className="text-sm tracking-widest uppercase text-gold font-medium mb-3">
-                {product.category?.name}
-              </p>
-              <h1 className="text-4xl md:text-5xl font-serif text-text mb-4">
-                {product.name}
-              </h1>
-              <p className="text-2xl text-text font-light mb-6">
-                {formatPrice(product.price)}
-              </p>
-              <p className="text-text-muted leading-relaxed">
-                {product.description}
-              </p>
-            </div>
-
-            <div className="border-t border-border py-8">
-              <div className="flex items-center gap-6 mb-6">
-                <div className="flex items-center border border-border rounded-md">
-                  <button 
-                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="p-3 text-text-muted hover:text-text transition-colors"
-                  >
-                    <Minus className="w-4 h-4" />
-                  </button>
-                  <span className="w-12 text-center font-medium">{quantity}</span>
-                  <button 
-                    onClick={() => setQuantity(quantity + 1)}
-                    className="p-3 text-text-muted hover:text-text transition-colors"
-                  >
-                    <Plus className="w-4 h-4" />
-                  </button>
-                </div>
-                
-                <button 
-                  onClick={() => {
-                    addItem(product, quantity);
-                    toast.success(`Added ${quantity} to cart!`);
-                  }}
-                  className="flex-1 bg-text text-bg-primary hover:bg-text-muted transition-colors py-4 font-medium flex items-center justify-center gap-2 rounded-md"
-                >
-                  <ShoppingBag className="w-5 h-5" />
-                  Add to Cart — {formatPrice(product.price * quantity)}
-                </button>
-              </div>
-            </div>
-
-            {/* Accordions for Details */}
-            <div className="border-t border-border">
-              <details className="group" open>
-                <summary className="flex justify-between items-center font-medium cursor-pointer list-none py-5 text-text">
-                  <span className="uppercase tracking-widest text-sm">Benefits</span>
-                  <span className="transition group-open:rotate-180">
-                    <svg fill="none" height="24" shapeRendering="geometricPrecision" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" viewBox="0 0 24 24" width="24"><path d="M6 9l6 6 6-6"></path></svg>
-                  </span>
-                </summary>
-                <div className="text-text-muted text-sm pb-5 leading-relaxed">
-                  <ul className="list-disc pl-5 space-y-1">
-                    {product.benefits?.map((benefit: string, i: number) => (
-                      <li key={i}>{benefit}</li>
-                    ))}
-                  </ul>
-                </div>
-              </details>
-              <div className="h-px bg-border w-full" />
-              
-              {product.ingredients && (
-                <>
-                  <details className="group">
-                    <summary className="flex justify-between items-center font-medium cursor-pointer list-none py-5 text-text">
-                      <span className="uppercase tracking-widest text-sm">Ingredients</span>
-                      <span className="transition group-open:rotate-180">
-                        <svg fill="none" height="24" shapeRendering="geometricPrecision" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" viewBox="0 0 24 24" width="24"><path d="M6 9l6 6 6-6"></path></svg>
-                      </span>
-                    </summary>
-                    <div className="text-text-muted text-sm pb-5 leading-relaxed">
-                      {product.ingredients}
-                    </div>
-                  </details>
-                  <div className="h-px bg-border w-full" />
-                </>
-              )}
-            </div>
-
-          </div>
-        </div>
+      <div className="container py-8 md:py-16">
+        <ProductDetailClient product={product} />
       </div>
     </div>
   );
 }
+

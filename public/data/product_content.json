@@ -1,0 +1,50 @@
+[
+  {
+    "slug": "divine-glow-cream",
+    "name": "Kanti Vardhan Divine Glow Face Cream",
+    "ingredients": "Kesar (Saffron), Chandan (Sandalwood), Manjistha Extract, Mulethi Extract, Khas Extract, Haldi (Turmeric) Extract, Gulab Jal (Rose Water), Gaay Ka Ghee (Cow’s Ghee), Badam Tel (Almond Oil), gel Base.",
+    "benefits": [
+      "Deeply nourishes and hydrates",
+      "Enhances natural radiance",
+      "Improves skin texture",
+      "Reduces dullness"
+    ],
+    "how_to_use": "Apply a small amount to cleansed face and neck. Gently massage in upward circular motions until fully absorbed. Use twice daily for best results."
+  },
+  {
+    "slug": "acne-clear-gel",
+    "name": "Acne Clear Gel",
+    "ingredients": "Manjistha Extract, Haridra (Turmeric) Extract, Semal Thorns Extract, Sariva Shwet Extract, Lodhra Extract, Masoor Extract, Gel Base.",
+    "benefits": [
+      "Targeted acne treatment",
+      "Soothes inflammation",
+      "Reduces redness",
+      "Prevents future breakouts"
+    ],
+    "how_to_use": "Apply a thin layer directly to blemishes and problem areas after cleansing. Use up to three times daily as needed."
+  },
+  {
+    "slug": "bust-lift-tightening-cream",
+    "name": "Bust Lift Tightening Cream",
+    "ingredients": "Gambhari Extract, Ashwagandha Extract, Badi Kateri Extract, Gulab Ki Patti (Rose Petals), Til Oil (Sesame Oil), Cream Base.",
+    "benefits": [
+      "Improves skin elasticity",
+      "Firms and tones",
+      "Enhances natural curves",
+      "Deeply moisturizes"
+    ],
+    "how_to_use": "Massage gently onto the bust area using upward, circular motions until fully absorbed. Use daily after showering."
+  },
+  {
+    "slug": "v-tightening-rejuvenating-cream",
+    "name": "V Tightening Rejuvenating Cream",
+    "ingredients": "Dhay Ka Phool Extract, Kooth Extract, Badi Harad (Haritaki) Extract, Fitkari (Alum), Majuphal (Oak Gall), Lodhra (Phal) Extract, Anar Ki Chaal Extract, Kadvi Tumbi Extract, Gel Base.",
+    "benefits": [
+      "Tones and tightens",
+      "Restores natural balance",
+      "Gentle on sensitive areas",
+      "Rejuvenating properties"
+    ],
+    "how_to_use": "Apply a small amount to the required area as directed. For external use only."
+  }
+]
