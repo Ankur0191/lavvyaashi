@@ -6,6 +6,17 @@ import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 import { Leaf, Droplets, ShieldCheck, Rabbit, ArrowRight } from "lucide-react";
 
+const dustParticles = Array.from({ length: 15 }, (_, index) => ({
+  width: 1 + ((index * 37) % 100) / 100,
+  height: 1 + ((index * 53) % 100) / 100,
+  opacity: 0.1 + ((index * 29) % 40) / 100,
+  left: (index * 47) % 100,
+  top: (index * 71) % 100,
+  distance: 30 + ((index * 43) % 50),
+  duration: 7 + ((index * 31) % 5),
+  delay: ((index * 17) % 5),
+}));
+
 export function Hero() {
   const reduced = useReducedMotion();
 
@@ -33,20 +44,20 @@ export function Hero() {
         />
         
         {/* Floating dust particles */}
-        {!reduced && Array.from({ length: 15 }).map((_, i) => (
+        {!reduced && dustParticles.map((particle, i) => (
           <motion.div
             key={`mdust${i}`}
             className="absolute rounded-full pointer-events-none"
             style={{
-              width: Math.random() * 2 + 1,
-              height: Math.random() * 2 + 1,
-              background: `rgba(200, 161, 75, ${Math.random() * 0.4 + 0.1})`,
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
+              width: particle.width,
+              height: particle.height,
+              background: `rgba(200, 161, 75, ${particle.opacity})`,
+              left: `${particle.left}%`,
+              top: `${particle.top}%`,
               zIndex: 1,
             }}
-            animate={{ y: [0, -(30 + Math.random() * 50)], opacity: [0, 1, 0] }}
-            transition={{ duration: 7 + Math.random() * 5, delay: Math.random() * 5, repeat: Infinity, ease: "easeInOut" }}
+            animate={{ y: [0, -particle.distance], opacity: [0, 1, 0] }}
+            transition={{ duration: particle.duration, delay: particle.delay, repeat: Infinity, ease: "easeInOut" }}
           />
         ))}
       </div>

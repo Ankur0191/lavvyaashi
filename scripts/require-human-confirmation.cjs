@@ -1,7 +1,5 @@
 "use strict";
 
-const readline = require("node:readline");
-
 const confirmationPhrase = "Lavvyaashi_2026";
 
 if (!process.stdin.isTTY || !process.stdout.isTTY) {
@@ -12,19 +10,38 @@ if (!process.stdin.isTTY || !process.stdout.isTTY) {
   process.exit(1);
 }
 
-const prompt = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-});
+process.stdout.write("Password: ");
+process.stdin.setRawMode(true);
+process.stdin.resume();
+process.stdin.setEncoding("utf8");
 
-prompt.question(
-  `Type "${confirmationPhrase}" to continue: `,
-  (answer) => {
-    prompt.close();
+let answer = "";
 
-    if (answer.trim() !== confirmationPhrase) {
-      console.error("Confirmation failed. The command was not run.");
-      process.exit(1);
-    }
+const finish = () => {
+  process.stdin.setRawMode(false);
+  process.stdin.pause();
+  process.stdout.write("\n");
+
+  if (answer !== confirmationPhrase) {
+    console.error("Authentication failed. The command was not run.");
+    process.exit(1);
   }
-);
+};
+
+process.stdin.on("data", (character) => {
+  if (character === "\u0003") {
+    process.exit(130);
+  }
+
+  if (character === "\r" || character === "\n") {
+    finish();
+    return;
+  }
+
+  if (character === "\u007f") {
+    answer = answer.slice(0, -1);
+    return;
+  }
+
+  answer += character;
+});
