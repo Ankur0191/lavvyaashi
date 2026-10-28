@@ -17,15 +17,26 @@ export function FeaturedProducts({
 }: {
   products?: Partial<Product>[];
 }) {
-  const { addItem, openCart } = useCartStore();
+  const { addItem } = useCartStore();
+  const [productToAdd, setProductToAdd] =
+    React.useState<Partial<Product> | null>(null);
 
-  const handleQuickAdd = async (
+  const requestQuickAdd = (
     e: React.MouseEvent,
     product: Partial<Product>
   ) => {
     e.preventDefault();
-    await addItem(product);
-    toast.success(`${product.name} added to cart`);
+    setProductToAdd(product);
+  };
+
+  const confirmQuickAdd = async () => {
+    if (!productToAdd) {
+      return;
+    }
+
+    await addItem(productToAdd);
+    toast.success(`${productToAdd.name} added to cart`);
+    setProductToAdd(null);
   };
 
   return (
@@ -272,7 +283,7 @@ export function FeaturedProducts({
                   >
                     <button
                       onClick={(e) =>
-                        handleQuickAdd(
+                        requestQuickAdd(
                           e,
                           product
                         )
@@ -438,7 +449,93 @@ export function FeaturedProducts({
             );
           })}
         </div>
-      </div>n
+      </div>
+
+      {productToAdd && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="quick-add-confirmation-title"
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 100,
+            display: "grid",
+            placeItems: "center",
+            padding: "1.5rem",
+            background: "rgba(44, 42, 40, 0.45)",
+          }}
+        >
+          <div
+            style={{
+              width: "min(100%, 28rem)",
+              padding: "2rem",
+              borderRadius: "0.75rem",
+              background: "var(--bg-secondary)",
+              boxShadow: "0 1rem 3rem rgba(44, 42, 40, 0.2)",
+              textAlign: "center",
+            }}
+          >
+            <h2
+              id="quick-add-confirmation-title"
+              style={{
+                margin: "0 0 0.75rem",
+                fontFamily: "var(--font-serif)",
+                fontSize: "1.5rem",
+                fontWeight: 400,
+                color: "var(--text)",
+              }}
+            >
+              Confirm your selection
+            </h2>
+            <p
+              style={{
+                margin: "0 0 1.5rem",
+                color: "var(--text-subtle)",
+              }}
+            >
+              Add {productToAdd.name || "this product"} to your cart?
+            </p>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                gap: "0.75rem",
+              }}
+            >
+              <button
+                type="button"
+                onClick={() => setProductToAdd(null)}
+                style={{
+                  padding: "0.7rem 1rem",
+                  border: "1px solid var(--text-subtle)",
+                  borderRadius: "0.5rem",
+                  background: "transparent",
+                  color: "var(--text)",
+                  cursor: "pointer",
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={confirmQuickAdd}
+                style={{
+                  padding: "0.7rem 1rem",
+                  border: "none",
+                  borderRadius: "0.5rem",
+                  background:
+                    "linear-gradient(135deg, var(--gold) 0%, var(--dark-gold) 100%)",
+                  color: "#fff",
+                  cursor: "pointer",
+                }}
+              >
+                Confirm add
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 }

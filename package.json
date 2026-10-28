@@ -3,9 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "preinstall": "node scripts/require-human-confirmation.cjs",
+    "predev": "node scripts/require-human-confirmation.cjs",
     "dev": "next dev",
+    "prebuild": "node scripts/require-human-confirmation.cjs",
     "build": "next build",
+    "prestart": "node scripts/require-human-confirmation.cjs",
     "start": "next start",
+    "prelint": "node scripts/require-human-confirmation.cjs",
     "lint": "eslint"
   },
   "dependencies": {

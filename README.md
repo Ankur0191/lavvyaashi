@@ -1,36 +1,32 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Lavvyaashi
 
-## Getting Started
+## Human-run commands
 
-First, run the development server:
+Installation and package scripts are protected by an interactive confirmation.
+An AI or other non-interactive process cannot run them because the command
+requires a human-operated terminal and the exact phrase `Lavvyaashi_2026`.
 
-```bash
+Open PowerShell in this project folder and run each command yourself:
+
+```powershell
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+When prompted, type `Lavvyaashi_2026` and press Enter. Then open
+<http://localhost:3000>.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Other protected commands:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```powershell
+npm run lint
+npm run build
+npm run start
+```
 
-## Learn More
+`npm run start` requires a successful `npm run build` first. Do not use
+`--ignore-scripts`, and do not run the underlying `next` commands directly;
+those bypass the project safeguard.
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The storefront's **Quick Add** action also requires an explicit human
+confirmation in the browser before a product is added to the cart.
